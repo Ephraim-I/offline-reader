@@ -25,6 +25,16 @@ desktop package.
 - Run the AI layer entirely on a local model through `llama.cpp`
 - Keep the experience offline-friendly by avoiding external API calls for the main workflow
 
+## Screenshots
+
+The workspace screen below shows the reader before a document is opened. The
+second image shows the PDF navigation and search controls; the document page
+itself is intentionally omitted.
+
+![Offline Reader workspace with document search and study navigation](docs/images/reader-workspace.png)
+
+![PDF reader navigation, zoom, and document search controls](docs/images/pdf-reader-controls.png)
+
 ## Project goals
 
 The project aims to make reading easier by giving users an instant understanding of unfamiliar terms in context instead of forcing them to switch to a separate dictionary or search engine. The system tries to keep the workflow simple:
