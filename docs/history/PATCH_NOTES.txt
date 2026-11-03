@@ -1,0 +1,17 @@
+Offline Reader Professionalization - Phase 5
+
+Changed files:
+- services/llm_service.py
+- tests/test_services.py
+
+Changes:
+- Protects the shared explanation LRU cache with a re-entrant lock so concurrent Flask requests cannot race while reading, promoting, inserting, or evicting entries.
+- Treats zero or negative cache capacity as caching disabled, avoiding an invalid eviction loop or retaining entries when caching is configured off.
+- Adds service regression tests for local-model timeouts, connection failures, invalid JSON, malformed/empty completions, API-client failure mapping, and LRU capacity/eviction behavior.
+
+Validation performed in the patch-building environment:
+- Python compilation passed for the changed service and test files.
+- Three standalone API-client failure-mapping smoke checks passed (timeout, connection failure, empty response).
+- The full service test module could not be executed because Flask is not installed in this environment (ModuleNotFoundError: No module named 'flask'). Run the project test suite in the user's environment with project requirements installed.
+
+Apply from the project root by extracting the ZIP and overwriting the included files. Back up the existing files first.

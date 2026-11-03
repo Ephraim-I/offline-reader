@@ -1,0 +1,17 @@
+Offline Reader Professionalization - Phase 13
+
+Purpose
+- Add repeatable automated regression tests for the source-release packager introduced in Phase 12.
+
+Files
+- tests/test_source_release_packager.py (new): seven tests using temporary fixture projects.
+- SOURCE_RELEASE.md: documents the command to run the packager regression tests and clarifies coverage limits.
+
+Verified
+- `python -m unittest tests.test_source_release_packager -v`: 7 tests passed.
+- The tests verify exclusion of environment/credential files, model weights, bytecode, virtual environments, build output, logs, and database files; preservation of required files; symlink omission; custom output handling; required-file failure; dry-run behavior; and ZIP integrity.
+- `python -m py_compile scripts/package_source_release.py tests/test_source_release_packager.py`: passed.
+
+Limitations
+- The tests use temporary fixture trees, not the full application GUI or real local model.
+- Exclusion rules are a denylist, not a comprehensive secret scanner. Review dry-run output and the final archive before sharing.

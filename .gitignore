@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.log
+.pytest_cache/
+.vscode/
+.Rhistory
+dist/
+archive/
+
+# Local configuration, model weights, and generated backend builds
+.env
+.env.*
+models/
+*.gguf
+llama.cpp/
+llama.cpp/build/
+*.sqlite
+*.sqlite3
+*.db

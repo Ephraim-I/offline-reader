@@ -1,0 +1,166 @@
+name: Offline Reader checks
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: offline-reader-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Python tests (Ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install system libraries for Tk and PDF support
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes python3-tk
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Compile Python source and tests
+        run: python -m compileall -q app ai documents services tests scripts run_reader.py app_config.py
+
+      - name: Validate release tag against VERSION
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          expected="v$(tr -d '\r\n' < VERSION)"
+          if [[ "$GITHUB_REF_NAME" != "$expected" ]]; then
+            echo "Tag $GITHUB_REF_NAME does not match VERSION ($expected)." >&2
+            exit 1
+          fi
+
+      - name: Run complete unittest suite
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -m unittest discover -s tests -v
+
+      - name: Check source-release packager dry run
+        run: python scripts/package_source_release.py --dry-run
+
+      # This step runs only after every preceding test/check succeeds.
+      - name: Build versioned source-release archive
+        shell: bash
+        run: |
+          version="$(tr -d '\r\n' < VERSION)"
+          python scripts/package_source_release.py --output "dist/offline-reader-source-${version}.zip"
+          echo "RELEASE_VERSION=${version}" >> "$GITHUB_ENV"
+
+      - name: Create checksum and provenance manifest
+        run: >-
+          python scripts/create_release_provenance.py
+          --archive "dist/offline-reader-source-${RELEASE_VERSION}.zip"
+          --version-file VERSION
+          --commit "${GITHUB_SHA}"
+          --ref "${GITHUB_REF}"
+          --output-dir dist
+
+      - name: Verify source-release archive contents
+        run: |
+          python - <<'PYCODE'
+          from pathlib import Path, PurePosixPath
+          import zipfile
+
+          import hashlib
+          import json
+          archive_path = f"dist/offline-reader-source-{__import__('pathlib').Path('VERSION').read_text().strip()}.zip"
+          required_suffixes = {"README.md", "requirements.txt", "run_reader.py"}
+          forbidden_dirs = {
+              ".git", ".venv", "venv", "env", "__pycache__",
+              ".pytest_cache", "node_modules", "dist", "build", "llama.cpp",
+          }
+          forbidden_suffixes = {
+              ".pyc", ".pyo", ".gguf", ".safetensors", ".pt", ".pth",
+              ".onnx", ".sqlite", ".sqlite3", ".db", ".pem", ".key",
+              ".p12", ".pfx", ".token", ".secret", ".log",
+          }
+          forbidden_names = {
+              ".env", ".env.local", ".env.production", "id_rsa",
+              "id_ed25519", "known_hosts", "secrets.json", "credentials.json",
+              "diary.db", ".Rhistory",
+          }
+          with zipfile.ZipFile(archive_path) as archive:
+              bad_member = archive.testzip()
+              if bad_member:
+                  raise SystemExit(f"ZIP integrity failure: {bad_member}")
+              names = set(archive.namelist())
+              top_levels = {PurePosixPath(name).parts[0] for name in names if PurePosixPath(name).parts}
+              if len(top_levels) != 1:
+                  raise SystemExit(f"Expected one top-level source directory, found: {sorted(top_levels)}")
+              prefix = next(iter(top_levels))
+              required = {f"{prefix}/{suffix}" for suffix in required_suffixes}
+              missing = sorted(required - names)
+              if missing:
+                  raise SystemExit("Missing required release files: " + ", ".join(missing))
+              violations = []
+              for name in sorted(names):
+                  path = PurePosixPath(name)
+                  parts = path.parts
+                  if any(part in forbidden_dirs for part in parts[:-1]):
+                      violations.append(f"excluded directory: {name}")
+                  if path.name in forbidden_names:
+                      violations.append(f"sensitive filename: {name}")
+                  if path.suffix.lower() in forbidden_suffixes:
+                      violations.append(f"forbidden suffix: {name}")
+                  if path.name.startswith(".env.") and path.name != ".env.example":
+                      violations.append(f"local environment file: {name}")
+              if violations:
+                  raise SystemExit("Release archive contains forbidden entries:\n" + "\n".join(violations))
+              print(f"Verified {len(names)} archive members; ZIP integrity and exclusion checks passed.")
+          archive = Path(archive_path)
+          checksum_path = Path(f"{archive_path}.sha256")
+          manifest_path = Path(f"{archive_path}.provenance.json")
+          actual_sha = hashlib.sha256(archive.read_bytes()).hexdigest()
+          expected_line = f"{actual_sha}  {archive.name}\n"
+          if checksum_path.read_text(encoding="utf-8") != expected_line:
+              raise SystemExit("SHA-256 sidecar does not match source archive")
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          if manifest.get("sha256") != actual_sha or manifest.get("archive") != archive.name:
+              raise SystemExit("Provenance manifest does not match source archive")
+          if manifest.get("commit") != __import__("os").environ.get("GITHUB_SHA"):
+              raise SystemExit("Provenance manifest commit does not match workflow commit")
+          print("Checksum and provenance manifest verified.")
+          PYCODE
+
+      # GitHub creates a signed SLSA provenance attestation using this workflow's
+      # OIDC identity. This attests the exact ZIP produced and verified above.
+      - name: Attest source-release archive
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/offline-reader-source-${{ env.RELEASE_VERSION }}.zip
+
+      - name: Upload source-release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-reader-source
+          path: |
+            dist/offline-reader-source-${{ env.RELEASE_VERSION }}.zip
+            dist/offline-reader-source-${{ env.RELEASE_VERSION }}.zip.sha256
+            dist/offline-reader-source-${{ env.RELEASE_VERSION }}.zip.provenance.json
+          if-no-files-found: error
+          retention-days: 14

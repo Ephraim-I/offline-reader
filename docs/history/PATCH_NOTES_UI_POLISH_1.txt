@@ -1,0 +1,23 @@
+Offline Reader UI Polish 1: Light workspace and collapsible navigation
+
+Changed:
+- Updated the application chrome to a minimal light palette with soft neutral controls and a light document canvas.
+- Added a collapsible left navigation sidebar shared by TXT and PDF workflows.
+- Added sidebar actions for opening a document and focusing document search.
+- Added a recent-documents list with double-click/Enter activation.
+- Preserved the existing menu, search results, PDF page list, reading controls, and AI popup workflow.
+- Updated PDF viewport surround and common input/list surfaces to match the light theme.
+- Integrated sidebar visibility with focus mode so Escape restores the prior layout.
+
+Apply:
+- Back up app/ui.py.
+- Copy app/ui.py from this patch into the project's app/ directory.
+- The patch notes can be retained with the project or used as a change record.
+
+Validation:
+- `python -m py_compile app/ui.py`: passed.
+- `python -m unittest tests.test_documents tests.test_retrieval tests.test_pdf_buffer tests.test_pdf_scroll tests.test_reading_mode -q`: 27 tests passed.
+- A live Tk GUI visual check was not performed in this environment. Please launch on Linux Mint and verify sidebar collapse/restore, focus mode, recent document activation, PDF page navigation, and window resizing.
+
+Notes:
+- This is an incremental UI polish patch based on the available os_root(1).zip snapshot. It does not claim that every previously discussed professionalization patch is present in that snapshot.

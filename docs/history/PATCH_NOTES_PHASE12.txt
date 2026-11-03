@@ -1,0 +1,19 @@
+Offline Reader Professionalization - Phase 12
+
+Added:
+- scripts/package_source_release.py: reproducible source ZIP packager with dry-run listing, required-file checks, and exclusions for virtual environments, caches, build outputs, local env/config files, common credential files, databases, model weights, and llama.cpp.
+- SOURCE_RELEASE.md: release packaging workflow and explicit limitations.
+
+Usage:
+  python scripts/package_source_release.py --dry-run
+  python scripts/package_source_release.py
+
+Validation performed for this patch:
+- Python syntax compilation of the packager.
+- Dry-run and ZIP creation against an isolated temporary fixture containing ordinary source files plus deliberately excluded secrets, caches, a database, a model file, and llama.cpp build output.
+- Archive listing checked to confirm excluded fixture files were absent.
+
+Limitations:
+- Denylist-based, not a complete secret scanner.
+- Does not run application tests, launch the GUI, or validate model inference.
+- The generated archive is a source distribution, not a standalone executable.

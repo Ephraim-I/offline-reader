@@ -1,0 +1,19 @@
+Offline Reader Professionalization - Phase 6
+
+Changed files:
+- app/ui.py
+- tests/test_ui_request_lifecycle.py
+
+Changes:
+- Associates each asynchronous explanation result with the exact popup instance that initiated the request, not only a selection counter. This prevents an older worker result from updating a popup that replaced the original while the request was in flight.
+- Uses the shared popup lifecycle guard before applying explanation results, and safely handles Tk widget errors that occur if a popup is destroyed between checking and updating it.
+- Makes popup closing tolerant of windows already destroyed by the window manager.
+- Avoids scheduling another result-poll callback after the Tk root has been destroyed.
+- Adds headless regression tests for current, stale, replaced, and already-closed popup results, including TclError handling.
+
+Validation performed in the patch-building environment:
+- Python compilation passed for app/ui.py and tests/test_ui_request_lifecycle.py.
+- 38 tests passed across UI request lifecycle, retrieval, document architecture, PDF render buffering, PDF scrolling, and reading mode.
+- Tests exercise lifecycle and controller behavior without launching a visible Tk window or contacting a running local LLM service. A manual GUI/model smoke test is still recommended on the target Linux Mint machine.
+
+Apply from the project root by extracting the ZIP and overwriting the included files. Back up app/ui.py first.

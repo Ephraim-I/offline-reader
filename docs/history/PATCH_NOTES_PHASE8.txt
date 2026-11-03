@@ -1,0 +1,25 @@
+Offline Reader Professionalization - Phase 8
+
+Purpose
+- Improve release-readiness documentation and make the test status criteria explicit.
+- Document dependency-related test discovery failures, local health checks, and a manual end-to-end smoke-test checklist.
+- Clarify that health endpoints prove reachability but do not prove useful model inference.
+
+Files changed
+- README.md
+- DEPLOYMENT.md
+
+Changes
+- Clarified full-suite and focused test commands and what a missing Flask import means.
+- Corrected manual API startup instructions to use `python -m services.llm_service`.
+- Added health checks for the local reader API and llama.cpp server.
+- Added a release smoke-test checklist for TXT/PDF workflows, popup lifecycle, model failure/recovery, and process shutdown.
+- Added release caveats for scanned PDFs and third-party licensing.
+
+Validation performed in this environment
+- `python -m unittest discover -s tests -v`: 42 tests passed; discovery ended with one import error because Flask is not installed in this environment (`ModuleNotFoundError: No module named 'flask'` in tests/test_services.py).
+- Manual GUI launch, live llama.cpp inference, and target-machine packaging checks were not performed.
+
+Apply
+- Extract this patch at the project root, overwriting README.md and DEPLOYMENT.md after backing them up if desired.
+- Read the smoke-test checklist in README.md and DEPLOYMENT.md before distributing a build.

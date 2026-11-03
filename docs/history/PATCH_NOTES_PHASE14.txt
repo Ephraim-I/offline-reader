@@ -1,0 +1,18 @@
+Offline Reader Professionalization - Phase 14
+
+Changes
+- Added .github/workflows/tests.yml for GitHub Actions on push, pull_request,
+  and manual workflow_dispatch.
+- CI sets up Python 3.11, installs project requirements, compiles project/test
+  modules, runs unittest discovery, and runs the source-release packager dry run.
+- README documents the equivalent local commands and CI limitations.
+
+Validation
+- Workflow structure and commands were checked against the current project tree.
+- YAML syntax validation and local test execution results are recorded in the
+  implementation response; GitHub-hosted execution cannot be confirmed until
+  this workflow is committed and pushed to a GitHub repository.
+
+Limitations
+- CI does not launch the GUI or run a real llama.cpp model.
+- GitHub Actions workflow execution is not verifiable from this local patch.

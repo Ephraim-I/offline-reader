@@ -1,0 +1,16 @@
+Offline Reader Professionalization - Phase 15
+
+Changes
+- Extended .github/workflows/tests.yml so source packaging runs only after the existing checks pass.
+- Added CI verification for ZIP integrity, required top-level project files, and common excluded secret/model/cache/build entries.
+- Uploaded the verified source ZIP as the `offline-reader-source` GitHub Actions artifact with a 14-day retention period.
+- Documented where to retrieve the artifact and clarified that it is a source archive, not a standalone installer.
+
+Validation performed locally
+- Workflow structure and commands reviewed against the Phase 12 source packager and current project paths.
+- Python source-release packager tests and packaging verification are run separately as part of patch validation; see delivery notes for the exact result.
+- GitHub-hosted workflow execution cannot be verified until the patch is applied and pushed to the repository.
+
+Limitations
+- The exclusion verification is a guardrail for common patterns, not a complete secret scanner.
+- CI does not launch the Tkinter GUI or run real local model inference.

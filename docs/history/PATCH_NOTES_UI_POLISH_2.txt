@@ -1,0 +1,18 @@
+Offline Reader · UI Polish 2
+
+Changes
+- Updated the contextual explanation popup to use the application's modern light theme.
+- Improved contrast, subtle borders, soft input surfaces, and consistent accent/hover colors.
+- Grouped source links under a SOURCES label and styled them as clear, full-width clickable rows.
+- Preserved validated citation mapping: only citation IDs present in the retrieved source list become links.
+- Added regression tests for light palette constants and citation validation behavior.
+
+Files in this patch
+- app/popup.py
+- tests/test_popup_presentation.py
+- PATCH_NOTES_UI_POLISH_2.txt
+
+Validation
+- Run: python -m py_compile app/popup.py tests/test_popup_presentation.py
+- Run: python -m unittest tests.test_popup_presentation tests.test_documents tests.test_retrieval tests.test_pdf_buffer tests.test_pdf_scroll tests.test_reading_mode -v
+- Automated tests do not render Tk widgets. Visually inspect the popup on Linux Mint, including long explanations, source lists, error messages, and narrow screens.

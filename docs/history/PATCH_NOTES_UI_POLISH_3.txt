@@ -1,0 +1,15 @@
+Offline Reader UI Polish 3: Search results and navigation feedback
+
+Changed:
+- app/ui.py: search results now use a clearer feedback area for in-progress, no-match, and failure states.
+- Search result rows prioritize the location label followed by a shortened passage preview.
+- Increased the visible result list height and added clearer keyboard guidance for Enter navigation.
+- Search failures now keep the result panel visible with a user-facing recovery hint while technical details remain in the status line.
+
+Validation performed:
+- `python -m py_compile app/ui.py` passed.
+- 31 tests passed across document, retrieval, PDF buffer/scroll, reading mode, and popup presentation modules.
+
+Not verified:
+- A live Tkinter GUI session was not launched, so actual appearance, resize behavior, and keyboard focus still require manual validation on Linux Mint.
+- This patch is incremental and assumes the existing UI layout from UI Polish 1 is already present. It does not alter retrieval ranking or document navigation logic.

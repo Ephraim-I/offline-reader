@@ -1,0 +1,27 @@
+Offline Reader Professionalization - Phase 11
+
+Files added:
+- scripts/install_linux_mint.sh
+- scripts/launch_reader.sh
+- INSTALL_LINUX_MINT.md
+
+Purpose:
+- Provide a repeatable Linux Mint Python environment setup.
+- Validate the declared runtime imports after installation.
+- Check model/server paths before starting the application.
+- Document the local llama.cpp/model setup and practical troubleshooting.
+
+Validation performed in the patch workspace:
+- bash -n passed for both shell scripts.
+- Shell script executable bits are set.
+- Python syntax compilation passed for run_reader.py and app_config.py.
+- Packaging contents reviewed; no model weights or virtual environment are included.
+
+Not verified here:
+- End-to-end installation on a real Linux Mint machine.
+- Building or running llama.cpp, downloading/loading a model, or launching the GUI.
+- A complete application test suite. This patch does not change application Python code.
+
+Usage from the project root:
+  ./scripts/install_linux_mint.sh
+  ./scripts/launch_reader.sh

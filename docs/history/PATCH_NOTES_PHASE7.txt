@@ -1,0 +1,20 @@
+Offline Reader Professionalization - Phase 7
+
+Purpose
+- Add deterministic application-workflow tests across TXT/PDF opening, text selection,
+  explanation/follow-up requests, document-switch failure handling, and AI service recovery.
+- Exercise the HTTP client with mocked timeout, connection failure, malformed JSON,
+  and model-unavailable responses, then verify a subsequent request can succeed.
+
+Files
+- tests/test_application_workflow.py (new)
+
+Apply
+- Extract this patch into the project root, preserving the tests/ directory.
+- Run: python -m unittest tests.test_application_workflow -v
+- Also run the existing project suite with: python -m unittest discover -s tests -v
+
+Scope and limitations
+- These are integration-oriented tests for controller/API boundaries. They do not launch
+  a visible Tkinter window, start llama.cpp/Ollama, or validate live inference quality.
+- Tests mock HTTP responses to remain deterministic and do not require a running model.

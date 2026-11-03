@@ -1,0 +1,13 @@
+Offline Reader UI Polish 4
+
+Changes
+- Added Ctrl+B to toggle the navigation sidebar without changing document state.
+- Ctrl+F now focuses document search and selects the existing query for quick replacement.
+- Added a native Tk tooltip to the sidebar toggle, including its keyboard shortcut.
+- Standardized visible keyboard-focus outlines for buttons using native Tk options.
+- Added source-level regression tests for the new keyboard and focus affordances.
+
+Validation
+- Python compilation and the focused UI accessibility tests should be run after applying.
+- Existing document/retrieval/PDF/reading-mode tests should also be rerun.
+- The actual visual focus ring, tooltip placement, and shortcut behaviour still require a live GUI check on Linux Mint.

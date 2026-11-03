@@ -1,0 +1,19 @@
+Offline Reader Professionalization - Phase 16
+
+Changes
+- Added scripts/create_release_provenance.py to generate a SHA-256 sidecar and JSON provenance manifest for a source archive.
+- Added tests/test_release_provenance.py covering digest accuracy, manifest metadata, invalid versions, missing archives, and empty commit IDs.
+- Updated .github/workflows/tests.yml to validate v* tags against VERSION, package a versioned source archive after tests pass, generate and verify checksum/provenance files, and upload all three files.
+- Updated SOURCE_RELEASE.md and README.md with version/tag and verification instructions.
+
+Validation performed in the available workspace
+- Focused provenance and source-packager tests: 12 passed.
+- Python compilation for scripts and tests passed.
+- A versioned source archive was created; SHA-256 verification, ZIP integrity, and provenance metadata checks passed (51 archive members).
+- PyYAML parsed the workflow successfully and expected jobs/steps were present.
+- Full unittest discovery found 40 test entries: 39 tests passed and the service test module failed to import because Flask is not installed in this local validation environment. requirements.txt does declare Flask; the GitHub workflow installs requirements before testing.
+
+Limitations
+- GitHub-hosted Actions has not been run from this workspace. Push the patch and inspect the Actions run.
+- The checksum is integrity metadata, not a cryptographic signature or proof of publisher identity.
+- The GUI and real local-model workflow were not exercised in this phase.

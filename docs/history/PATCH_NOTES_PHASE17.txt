@@ -1,0 +1,17 @@
+Offline Reader Professionalization - Phase 17
+
+Changes
+- Added GitHub build provenance attestation for the exact versioned source ZIP using actions/attest-build-provenance@v2.
+- Granted only the workflow permissions needed for repository read access and OIDC-backed attestation: contents: read, id-token: write, attestations: write.
+- Attestation is created only after the source archive has passed integrity, exclusion, checksum, and provenance checks; it precedes artifact upload.
+- Documented SHA-256 and GitHub CLI attestation verification in SOURCE_RELEASE.md and README.md.
+- Added static regression tests for workflow permissions, attested subject, step ordering, and verification documentation.
+
+Validation
+- Local static configuration tests and Python compilation were run for this patch.
+- Workflow YAML parsing is reported separately by the implementation notes; local validation cannot create a genuine GitHub OIDC attestation.
+
+Limitations
+- The GitHub-hosted workflow must run after this patch is pushed before an actual attestation exists.
+- A recipient must verify the attestation against the expected OWNER/REPOSITORY and trusted workflow identity.
+- The attestation authenticates build provenance; the SHA-256 sidecar remains useful for detecting accidental corruption.

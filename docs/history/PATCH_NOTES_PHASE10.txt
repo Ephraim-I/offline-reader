@@ -1,0 +1,26 @@
+Offline Reader Professionalization — Phase 10
+
+Added:
+- scripts/release_check.py: repeatable local release verification.
+- README.md: documents the new release-check command and its limitations.
+
+Checks performed by the script:
+- Required project paths are present.
+- Flask, PyMuPDF (fitz), and requests import modules are available.
+- All Python files outside ignored build/virtual-environment/cache directories compile.
+- Common private/large-file patterns (environment files, keys, databases, and model weights) are absent from the project tree; .env.example is allowed.
+- Runs `python -m unittest discover -s tests -v` unless `--skip-tests` is supplied.
+
+Usage:
+  python scripts/release_check.py
+  python scripts/release_check.py --skip-tests
+
+Validation in the patch environment:
+- Python syntax check: passed for 35 Python files.
+- Focused document/retrieval/PDF/reading-mode/UI lifecycle/application workflow suite: 42 tests passed.
+- Static release-check run: required paths, syntax, and filename hygiene passed; dependency check failed because Flask is not installed in this environment.
+- Full unittest discovery was not run successfully here; service tests require Flask. Install `python -m pip install -r requirements.txt`, then rerun the release check.
+
+Limitations:
+- The filename hygiene scan is best-effort, not a secret scanner or license audit.
+- A passing automated run does not certify GUI interaction, llama.cpp startup, or live model inference. Complete the manual checklist in README.md.
