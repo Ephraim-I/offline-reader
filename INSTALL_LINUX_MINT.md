@@ -84,6 +84,10 @@ already available, then opens the Tkinter reader. By default, the API binds to
 loopback unless you intentionally understand and configure the security implications
 of exposing them to a network.
 
+The reader opens to a workspace with document search and study tools:
+
+![Offline Reader study workspace with notes, highlights, quizzes, and flashcards](docs/images/reader-study-workspace.png)
+
 To use non-default ports, set `OFFLINE_READER_API_PORT` and
 `OFFLINE_READER_LLM_PORT` before launching. Other runtime settings are documented
 in `.env.example`; that file is a reference, not an automatically loaded `.env`

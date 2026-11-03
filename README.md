@@ -27,11 +27,13 @@ desktop package.
 
 ## Screenshots
 
-The workspace screen below shows the reader before a document is opened. The
-second image shows the PDF navigation and search controls; the document page
-itself is intentionally omitted.
+The workspace screen below shows the reader before a document is opened, including
+its study tools. The PDF screenshot shows navigation and search controls; the
+document page itself is intentionally omitted.
 
 ![Offline Reader workspace with document search and study navigation](docs/images/reader-workspace.png)
+
+![Offline Reader study workspace with notes, highlights, quizzes, and flashcards](docs/images/reader-study-workspace.png)
 
 ![PDF reader navigation, zoom, and document search controls](docs/images/pdf-reader-controls.png)
 
